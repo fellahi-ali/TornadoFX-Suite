@@ -1,8 +1,10 @@
 package com.github.hd.tornadofxsuite.controller
 
 import com.github.hd.tornadofxsuite.model.BareBreakDown
+import com.github.hd.tornadofxsuite.model.ClassFromScript
 import com.github.hd.tornadofxsuite.view.MainView
 import com.intellij.psi.PsiElement
+import de.swirtz.ktsrunner.objectloader.KtsObjectLoader
 import javafx.event.EventTarget
 import tornadofx.*
 import java.io.BufferedReader
@@ -26,6 +28,7 @@ class FXTestGenerator: Controller() {
                         fileOutputRead(it)
                     }
         }
+        generateTest()
     }
 
     private fun fileOutputRead(path: Path) {
@@ -45,12 +48,12 @@ class FXTestGenerator: Controller() {
 
             // print and format classes
             scanner.bareClasses.forEach {
-                println("Class Name: " + it.className)
-                println("Class Properties: ")
+                println("CLASS NAME: " + it.className)
+                println("CLASS PROPERTIES: ")
                 it.classProperties.forEach {property ->
                     println("\t" + property)
                 }
-                println("Methods: ")
+                println("CLASS METHODS: ")
                 it.classMethods.forEach { method ->
                     println("\t" + method)
                 }
@@ -80,4 +83,14 @@ class FXTestGenerator: Controller() {
     fun detectEvents(eventTarget: EventTarget) {
         // TODO
     }
+
+    fun generateTest() {
+        val Test = javaClass.getResource("../BasicTest.txt")
+
+        val scriptReader = Files.newBufferedReader(Paths.get("path/classDeclaration.kts"))
+        val loadedObj: ClassFromScript = KtsObjectLoader().load<ClassFromScript>(scriptReader)
+    }
+
+
+
 }

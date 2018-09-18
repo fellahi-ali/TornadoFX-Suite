@@ -78,3 +78,5 @@ class Methods(methodName: String, methodAccess: String = "public",
     var returnsType by returnsTypeProperty
 
 } */
+
+data class ClassFromScript(val x: String)

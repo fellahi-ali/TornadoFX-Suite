@@ -1,7 +1,6 @@
 package com.github.hd.tornadofxsuite.controller
 
 import com.github.hd.tornadofxsuite.model.*
-import jdk.nashorn.internal.parser.JSONParser
 import kastree.ast.Node
 import kastree.ast.psi.Parser
 import tornadofx.*

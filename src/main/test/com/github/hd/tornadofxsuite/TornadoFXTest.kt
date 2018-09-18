@@ -1,6 +1,5 @@
 package com.github.hd.tornadofxsuite
 
-import com.github.hd.tornadofxsuite.app.TornadoFXSuite
 import javafx.application.Platform
 import javafx.scene.Node
 import javafx.scene.Parent
@@ -44,13 +43,12 @@ fun waitFor(condition: () -> Boolean, maxMillis: Long = 10000) {
 }
 
 fun printNodes(node: Node, level: Int = 0) {
-
-    /*TornadoFXSuite.logger.info { " ".repeat(level) + node.toString() }
+    //TornadoFXSuite.logger.info { " ".repeat(level) + node.toString() }
     if (node is Parent) {
         node.childrenUnmodifiable.forEach {
             printNodes(it, level + 1)
         }
-    }*/
+    }
 }
 
 
