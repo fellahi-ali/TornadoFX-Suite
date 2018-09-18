@@ -1,54 +1,76 @@
 package com.github.hd.tornadofxsuite.controller
 
-import com.github.hd.tornadofxsuite.model.ClassBreakDown
-import com.github.hd.tornadofxsuite.model.Fields
-import com.github.hd.tornadofxsuite.model.Methods
-import com.github.hd.tornadofxsuite.model.Parameters
+import com.github.hd.tornadofxsuite.model.*
+import jdk.nashorn.internal.parser.JSONParser
 import kastree.ast.Node
 import kastree.ast.psi.Parser
 import tornadofx.*
 
-
+/*
+ * TODO - AST mappings, composition.
+ */
 class ClassScanner: Controller() {
 
-    lateinit var className: String
-    var classConstructors = ArrayList<Parameters>()
-    var classMembers = ArrayList<Methods>()
+    var classMembers = ArrayList<String>()
+    var bareClasses = ArrayList<BareBreakDown>()
+    var classProperties = ArrayList<ClassProperties>()
 
-     fun parseAST(textFile: String): ClassBreakDown {
-        val file = Parser.parseFile(textFile)
-        println(file)
+     fun parseAST(textFile: String) {
+         val file = Parser.parseFile(textFile)
 
-         // class name
-         className = (file.decls[0] as Node.Decl.Structured).name
+         // store class names and their methods
+         file.decls.forEach {
+             val className = (it as Node.Decl.Structured).name
 
+             (file.decls[0] as Node.Decl.Structured).members.forEach {
+                 val memberName = ""
+                 when (it) {
+                     is Node.Decl.Structured -> println("this is probably a companion object")
+                     is Node.Decl.Property -> convertToJsonProperty(it) // TODO: fill out later
+                     is Node.Decl.Func -> classMembers.add(it.name)
 
-         // class constructors
-         (file.decls[0] as Node.Decl.Structured).primaryConstructor?.params?.forEach {
-            classConstructors.add(detectParameters(it))
+                 }
+             }
+             bareClasses.add(BareBreakDown(className, classProperties, classMembers))
          }
+     }
 
-         // class fields
-         // TODO: find what class global fields look like
+    private fun convertToJsonProperty(property: Node.Decl.Property) {
+        val firstTrueBit = "Property(mods=[], readOnly=true, typeParams=[], " +
+                "receiverType=null, vars=[Var(name="
+        val firstFalseBit = "Property(mods=[], readOnly=false, typeParams=[], " +
+                "receiverType=null, vars=[Var(name="
+        val privateFirstTrueBit = "Property(mods=[Lit(keyword=PRIVATE)], " +
+                "readOnly=true, typeParams=[], receiverType=null, vars=[Var("
+        val privateFirstFalseBit = "Property(mods=[Lit(keyword=PRIVATE)], " +
+                "readOnly=false, typeParams=[], receiverType=null, vars=[Var("
+        val secondBit = "expr=Call(expr=Name(name="
+        val string = property.toString()
 
-         // class members
-         (file.decls[0] as Node.Decl.Structured).members.forEach {
-             classMembers.add(detectMembers(it as Node.Decl.Func))
-         }
+        // it ain't stupid if it works shut up
+        if (string.contains(firstTrueBit) || string.contains(secondBit) ||
+                string.contains(privateFirstTrueBit) || string.contains(privateFirstFalseBit)) {
+            println(string)
+            val splitToName = when {
+                    string.contains(firstTrueBit) -> string.split(firstTrueBit)[1]
+                    string.contains(privateFirstTrueBit) -> string.split(privateFirstTrueBit)[1]
+                    string.contains(firstFalseBit) -> string.split(firstFalseBit)[1]
+                    string.contains(privateFirstFalseBit) -> string.split(privateFirstFalseBit)[1]
+                    else -> return
+            }
 
-         return ClassBreakDown(className, "public", classConstructors,  classMembers)
-    }
+            val isolatedName = splitToName.split(",")[0]
+            if (string.contains(secondBit)) {
+                val splitToType = string.split(secondBit)
+                val isolatedType = splitToType[1].split(")")[0]
 
-    private fun detectParameters(node: Node.Decl.Func.Param): Parameters {
-        return Parameters(node.name, (node.type.ref as Node.TypeRef.Simple).pieces[0].name)
-    }
-
-    private fun detectMembers(node: Node.Decl.Func): Methods {
-        val parameters = ArrayList<Fields>()
-        node.params.forEach {
-            detectParameters(it)
+                classProperties.add(ClassProperties(isolatedName, isolatedType));
+            }
         }
 
-        return Methods(node.name, "public", parameters, "void")
+        // TODO - look into TornadoFX to see if it only accepts up to 80 char in a string
+        //val json = loadJsonObject("""$string""")
+
+
     }
 }

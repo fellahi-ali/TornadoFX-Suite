@@ -1,6 +1,6 @@
 package com.github.hd.tornadofxsuite.controller
 
-import com.github.hd.tornadofxsuite.model.ClassBreakDown
+import com.github.hd.tornadofxsuite.model.BareBreakDown
 import com.github.hd.tornadofxsuite.view.MainView
 import com.intellij.psi.PsiElement
 import javafx.event.EventTarget
@@ -13,7 +13,7 @@ import java.nio.file.Paths
 
 class FXTestGenerator: Controller() {
     val kotlinFiles = ArrayList<File>()
-    val kotlinClasses = ArrayList<ClassBreakDown>()
+    val kotlinClasses = ArrayList<BareBreakDown>()
     private val view: MainView by inject()
     private val scanner: ClassScanner by inject()
 
@@ -41,27 +41,43 @@ class FXTestGenerator: Controller() {
             kotlinFiles.add(file)
             view.console.items.add(fileText)
             view.console.items.add("===================================================================")
-            kotlinClasses.add(scanner.parseAST(fileText))
+            scanner.parseAST(fileText)
+
+            // print and format classes
+            scanner.bareClasses.forEach {
+                println("Class Name: " + it.className)
+                println("Class Properties: ")
+                it.classProperties.forEach {property ->
+                    println("\t" + property)
+                }
+                println("Methods: ")
+                it.classMethods.forEach { method ->
+                    println("\t" + method)
+                }
+            }
+
+
         }
     }
 
+    // TODO: Either use regex or better parsing
     // filter files for only Views and Controllers
     private fun filterFiles(fileText: String): Boolean {
         return !fileText.contains("ApplicationTest()")
                 && !fileText.contains("src/test")
                 && !fileText.contains("@Test")
-                && !fileText.contains("Stylesheet()")
+                && !(fileText.contains("App("))
     }
 
     fun detectModels(psiElement: PsiElement) {
-
+        // TODO
     }
 
     fun detectControls() {
-
+        // TODO
     }
 
     fun detectEvents(eventTarget: EventTarget) {
-
+        // TODO
     }
 }

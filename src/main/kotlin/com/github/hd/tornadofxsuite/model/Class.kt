@@ -2,6 +2,13 @@ package com.github.hd.tornadofxsuite.model
 
 import java.util.*
 
+data class BareBreakDown(val className: String,
+                         val classProperties: ArrayList<ClassProperties>,
+                         val classMethods: ArrayList<String>)
+
+data class ClassProperties(val propertyName: String,
+                           val propertyType: String)
+
 data class ClassBreakDown(val className: String,
                           val classAccess: String? = "public",
                           val classConstructors: ArrayList<Parameters>,

@@ -39,7 +39,7 @@ class MainView : View("TornadoFX-Suite") {
                 }?.let {
                     fxTestGenerator.walk(it.absolutePath)
                 }
-                fxTestGenerator.kotlinFiles.forEach { println(it) }
+                // fxTestGenerator.kotlinFiles.forEach { println(it) }
             }
             vboxConstraints {
                 marginLeft = 300.0
