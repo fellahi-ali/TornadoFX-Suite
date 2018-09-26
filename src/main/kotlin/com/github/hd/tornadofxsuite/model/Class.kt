@@ -1,5 +1,6 @@
 package com.github.hd.tornadofxsuite.model
 
+import com.google.gson.JsonObject
 import java.util.*
 
 /*data class ClassBreakDown(val className: String,
@@ -31,3 +32,22 @@ data class BareBreakDown(val className: String,
 
 data class ClassProperties(val propertyName: String,
                            val propertyType: String)
+
+// TODO implement an infinite tree structure to hold View structures
+
+enum class MVC {
+    ItemViewModel, ViewModel, Controller, View
+}
+
+enum class COMPONENTS {
+    BORDERPANE, LISTVIEW, TABLEVIEW, VBOX, HBOX,
+    DATAGRID, IMAGEVIEW
+}
+
+enum class INPUTS {
+    Form, TextField, DateField, Button, Action,
+    RadioButton, ToggleButton, ComboButton, Checkbox,
+}
+
+
+
